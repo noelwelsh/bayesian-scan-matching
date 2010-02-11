@@ -1,4 +1,4 @@
-#lang typed-scheme
+#lang typed/scheme
 
 ;; Utilities for type injections
 
@@ -13,42 +13,23 @@
           #f))]
    [else #f]))
 
+(: number->real (Number -> (Option Real)))
+(define (number->real number)
+  (if (real? number)
+      number
+      #f))
 
-;; Utilities to deal with the annoying Option type
+(: assert (All (a) ((Option a) -> a)))
+(define (assert v)
+  (if v
+      v
+      (raise-type-error 'assert "Assertion failed" v)))
 
-(define-syntax try
-  (syntax-rules ()
-    [(try expr)
-     (let ([val expr])
-       (if val val #f))]
-    [(try expr0 expr1 ...)
-     (let ([val expr0])
-       (if val
-           (try expr1 ...)
-           #f))]))
-
-(define-syntax try/fail
-  (syntax-rules ()
-    [(try/fail expr)
-     (let ([val expr])
-       (if val
-           val
-           (raise-type-error
-            'try/fail
-            (format "non-#f result of expression ~a" (quote expr))
-            val)))]
-    [(try/fail expr0 expr1 ...)
-     (let ([val expr0])
-       (if val
-           (try/fail expr1 ...)
-           (raise-type-error
-            'try/fail
-            (format "non-#f result of expression ~a" (quote expr0))
-            val)))]))
 
 
 (provide
  number->exact-integer
+ number->real
  
- try
- try/fail)
+ assert)
+ 

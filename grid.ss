@@ -1,4 +1,4 @@
-#lang typed-scheme
+#lang typed/scheme
 
 (require
  scheme/vector
@@ -8,13 +8,13 @@
 ;; discretise : Convert value to an integer number of units.
 ;;
 ;; E.g. (discretise 101 10) -> 10
-(: discretise (Number Number -> Integer))
+(: discretise (Real Real -> Integer))
 (define (discretise value unit)
   (assert 
    (number->exact-integer (floor (/ value unit)))))
 
 
-(: scan->grid-scan (Scan Number -> Grid-Scan))
+(: scan->grid-scan (Scan Real -> Grid-Scan))
 (define (scan->grid-scan scan unit)
   (: point->grid-point (Point -> Grid-Point))
   (define (point->grid-point point)

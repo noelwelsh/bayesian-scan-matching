@@ -1,4 +1,4 @@
-#lang typed-scheme
+#lang typed/scheme
 
 (: likelihood (Prior Grid-Scan -> (Option Real)))
 ;; Computes the log-likelihood for the scan coming from the

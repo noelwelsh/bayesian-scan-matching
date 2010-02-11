@@ -1,6 +1,6 @@
-#lang typed-scheme
+#lang typed/scheme
 
-(define-type-alias Point (Vectorof Number))
+(define-type-alias Point (Vectorof Real))
 (define-type-alias Scan (Vectorof Point))
 
 (define-type-alias Grid-Point (Vectorof Integer))
@@ -13,7 +13,7 @@
 ;; points are the grid points in the Prior
 ;;
 ;; Points are ordered row-major
-(define-struct: Prior ([x : Integer] [y : Integer] [points : (Vectorof Number)]))
+(define-struct: Prior ([x : Natural] [y : Natural] [points : (Vectorof Real)]))
 
 (provide
  (all-defined-out))
