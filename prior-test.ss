@@ -2,26 +2,26 @@
 
 (require
  (planet schematics/schemeunit:3/test)
- "prior.ss"
+ "place.ss"
  "types.ss")
 
-(define example-prior
-  (make-Prior 10 5
+(define example-place
+  (make-Place 10 5
               #(1 1 2 2 2 2 2 2 1 1
                 1 1 2 1 1 1 1 1 2 1
                 1 1 2 1 1 1 1 2 1 1
                 1 1 2 2 2 1 1 2 1 1
                 1 1 1 1 1 2 2 1 1 1)))
 
-(define/provide-test-suite prior-tests
+(define/provide-test-suite place-tests
   (test-case
-   "prior-ref"
-   (check = (prior-ref example-prior 0 0) 1)
-   (check = (prior-ref example-prior 1 1) 1)
-   (check = (prior-ref example-prior 2 2) 2)
-   (check = (prior-ref example-prior 3 3) 2)
-   (check = (prior-ref example-prior 4 4) 1)
-   (check-exn exn:fail? (lambda () (prior-ref example-prior 0 5)))
-   (check-exn exn:fail? (lambda () (prior-ref example-prior 11 0))))
+   "place-ref"
+   (check = (place-ref example-place 0 0) 1)
+   (check = (place-ref example-place 1 1) 1)
+   (check = (place-ref example-place 2 2) 2)
+   (check = (place-ref example-place 3 3) 2)
+   (check = (place-ref example-place 4 4) 1)
+   (check-exn exn:fail? (lambda () (place-ref example-place 0 5)))
+   (check-exn exn:fail? (lambda () (place-ref example-place 11 0))))
     
   )
