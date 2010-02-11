@@ -10,7 +10,7 @@
 ;; E.g. (discretise 101 10) -> 10
 (: discretise (Number Number -> Integer))
 (define (discretise value unit)
-  (try/fail
+  (assert 
    (number->exact-integer (floor (/ value unit)))))
 
 

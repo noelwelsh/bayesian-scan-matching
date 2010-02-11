@@ -2,7 +2,9 @@
 
 (require
  (planet schematics/schemeunit:3)
- "grid-test.ss")
+ "grid-test.ss"
+ "prior-test.ss")
 
 (define/provide-test-suite all-tests
-  grid-tests)
+  grid-tests
+  prior-tests)
