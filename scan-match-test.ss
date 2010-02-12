@@ -15,5 +15,6 @@
 
   (test-case
    "scan-match"
+   (display (length (scan-match example-place example-grid-scan)))(newline)
    (fail "Not implemented"))
   )

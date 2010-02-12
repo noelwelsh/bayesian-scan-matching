@@ -5,7 +5,8 @@
  "types.ss"
  "point.ss"
  "grid-scan.ss"
- "place.ss")
+ "place.ss"
+ "util.ss")
 
 (: log-likelihood (Place Grid-Scan -> (Option Real)))
 ;; Computes the log-likelihood for the scan coming from the
@@ -80,7 +81,7 @@
   (for/fold ([samples null])
       ([angle (in-range 0 360 angle-increment)])
     (sample-x-axis
-     (sample-x-axis samples 0 add-unit angle)
+     (sample-x-axis samples 0 add-unit (degrees->radians angle))
      0 sub-unit angle)))
 
 (provide

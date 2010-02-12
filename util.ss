@@ -1,6 +1,8 @@
 #lang typed/scheme
 
-;; Utilities for type injections
+(require
+ scheme/math)
+
 
 (: number->exact-integer (Number -> (Option Integer)))
 (define (number->exact-integer number)
@@ -25,11 +27,16 @@
       v
       (raise-type-error 'assert "Assertion failed" v)))
 
+(: degrees->radians (Real -> Real))
+(define (degrees->radians deg)
+  (/ (* deg (* 2 pi)) 360))
 
 
 (provide
  number->exact-integer
  number->real
  
- assert)
+ assert
+
+ degrees->radians)
  
