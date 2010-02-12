@@ -86,4 +86,5 @@
      0 sub-unit angle)))
 
 (provide
- log-likelihood)
+ log-likelihood
+ scan-match)

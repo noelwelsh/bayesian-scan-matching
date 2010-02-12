@@ -12,4 +12,8 @@
    (check =
           (log-likelihood example-place example-grid-scan)
           (+ (log 2/3) (log 2/3) (log 1/2) (log 2/3))))
+
+  (test-case
+   "scan-match"
+   (fail "Not implemented"))
   )
