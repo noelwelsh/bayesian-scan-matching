@@ -1,13 +1,11 @@
 #lang typed/scheme
 
 (require
+ "base.ss"
  "types.ss"
  "point.ss"
  "grid-scan.ss"
  "place.ss")
-
-;; TODO: Abstract this
-(define: unit : Real 0.1)
 
 (: log-likelihood (Place Grid-Scan -> (Option Real)))
 ;; Computes the log-likelihood for the scan coming from the
