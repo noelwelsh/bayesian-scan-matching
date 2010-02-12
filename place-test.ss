@@ -3,15 +3,8 @@
 (require
  (planet schematics/schemeunit:3/test)
  "place.ss"
- "types.ss")
-
-(define example-place
-  (make-Place 10 5
-              #(1 1 2 2 2 2 2 2 1 1
-                1 1 2 1 1 1 1 1 2 1
-                1 1 2 1 1 1 1 2 1 1
-                1 1 2 2 2 1 1 2 1 1
-                1 1 1 1 1 2 2 1 1 1)))
+ "types.ss"
+ "test-data.ss")
 
 (define/provide-test-suite place-tests
   (test-case
