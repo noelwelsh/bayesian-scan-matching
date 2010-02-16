@@ -84,6 +84,16 @@
      (sample-x-axis samples 0 add-unit (degrees->radians angle))
      0 sub-unit angle)))
 
+(: scan-match/best (Place Grid-Scan -> Sample))
+;; Returns the best sample
+(define (scan-match/best place grid-scan)
+  ;; Slow implementation
+  (car
+   (sort (scan-match place grid-scan)
+         (lambda: ([s1 : Sample] [s2 : Sample])
+                  (> (car s1) (car s2))))))
+
 (provide
  log-likelihood
- scan-match)
+ scan-match
+ scan-match/best)

@@ -17,4 +17,10 @@
    "scan-match"
    (display (length (scan-match example-place example-grid-scan)))(newline)
    (fail "Not implemented"))
+
+  (test-case
+   "scan-match/best"
+   (define sample (scan-match/best example-place example-grid-scan))
+   (check = (car sample) (* 8 (log 2/3)))
+   (check-equal? (cdr sample) (vector 0 0 0)))
   )
