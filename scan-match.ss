@@ -6,6 +6,7 @@
  "point.ss"
  "grid-scan.ss"
  "place.ss"
+ "pose.ss"
  "util.ss")
 
 (: log-likelihood (Place Grid-Scan -> (Option Real)))
@@ -38,10 +39,15 @@
     ;;       (values (+ (place-ll place x y) ll) inside?)))
   (if inside? ll #f))
 
-(: scan-match (Place Grid-Scan -> (Listof Sample)))
-(define (scan-match place grid-scan)
-  (define: (add-unit [v : Real]) : Real (+ v unit))
-  (define: (sub-unit [v : Real]) : Real (- v unit))
+(: scan-match
+   (Place Grid-Scan Natural -> (Listof Sample))
+   ;(case-lambda 
+   ;  (Place Grid-Scan -> (Listof Sample))
+   ;  (Place Grid-Scan Natural -> (Listof Sample))))
+   )
+(define (scan-match place grid-scan angle-increment)
+  (define: (add-unit [v : Real]) : Real (+ v 1))
+  (define: (sub-unit [v : Real]) : Real (- v 1))
   (: transformed-ll (Real Real Real -> (Option Real)))
   (define (transformed-ll x y a)
     (log-likelihood
@@ -76,22 +82,29 @@
             angle)
            (x-inc x) x-inc angle)
           samples)))
-  (define: angle-increment : Natural 1) ;; Degrees
   
   (for/fold ([samples null])
       ([angle (in-range 0 360 angle-increment)])
     (sample-x-axis
      (sample-x-axis samples 0 add-unit (degrees->radians angle))
-     0 sub-unit angle)))
+     (sub-unit 0) sub-unit (degrees->radians angle))))
 
 (: scan-match/best (Place Grid-Scan -> Sample))
 ;; Returns the best sample
 (define (scan-match/best place grid-scan)
   ;; Slow implementation
   (car
-   (sort (scan-match place grid-scan)
+   (sort (scan-match place grid-scan 1)
          (lambda: ([s1 : Sample] [s2 : Sample])
-                  (> (car s1) (car s2))))))
+           (let ([ll1 (car s1)]
+                 [ll2 (car s2)]
+                 [tx1 (cdr s1)]
+                 [tx2 (cdr s2)])
+             (cond
+              [(> ll1 ll2) #t]
+              [(= ll1 ll2) (pose< tx1 tx2)]
+              [else #f]))))))
+               
 
 (provide
  log-likelihood

@@ -22,5 +22,17 @@
           (vector 2 2)
           (vector 2 3) (vector 3 3) (vector 4 3)))
 
+
+;; Place and scan small enough that we can work all the
+;; possible scan matches
+(define small-place
+  (make-Place 2 2 #(2 1 1 2)))
+
+(define small-grid-scan
+  (vector (vector 0 0) (vector 0 1)))
+
+
+
+
 (provide
  (all-defined-out))
