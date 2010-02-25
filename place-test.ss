@@ -3,6 +3,7 @@
 (require
  (planet schematics/schemeunit:3/test)
  "place.ss"
+ "point.ss"
  "types.ss"
  "scan-match.ss"
  "grid-scan.ss"
@@ -34,5 +35,15 @@
 
   (test-case
    "place-add updates the correct locations"
-   (fail "Not implemented"))
+   (define posterior (place-add example-place example-grid-scan))
+   (for ([pt (in-vector example-grid-scan)])
+        (define x (vector-ref pt 0))
+        (define y (vector-ref pt 1))
+        (if (place-has-point? example-place x y)
+            (check-equal?
+             (place-ref posterior x y)
+             (add1 (place-ref example-place x y)))
+            (check-equal?
+             (place-ref posterior x y)
+             (place-ref example-place x y)))))
   )
