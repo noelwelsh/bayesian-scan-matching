@@ -2,7 +2,9 @@
 
 (require
  scheme/match
+ scheme/vector
  "types.ss"
+ "point.ss"
  "util.ss")
 
 
@@ -40,8 +42,59 @@
         (assert (number->real (log (/ n (+ n 1.0))))))
       (assert (number->real (log 0.5)))))
 
+(: place-copy (Place -> Place))
+(define (place-copy p)
+  (match-define (struct Place (p-x p-y pts)) p)
+  (make-Place p-x p-y (vector-copy pts)))
+
+(: place-add (Place Grid-Scan -> Place))
+;;
+;; Update a place with a scan. The scan must be already
+;; transformed by an appropriate pose
+(define (place-add p s)
+  (define new-p (place-copy p))
+  (match-define (struct Place (p-x p-y pts)) new-p)
+  (for ([pt (in-vector s)])
+       (define x (point-x pt))
+       (define y (point-y pt))
+       (define idx (place-coords->index new-p x y))
+       (when idx
+         (vector-add1! pts idx)))
+  new-p)
+
+(: place-remove (Place Grid-Scan -> Place))
+;;
+;; Remove a scan from a place. The scan must be already
+;; transformed by an appropriate pose
+(define (place-remove p s)
+  (define new-p (place-copy p))
+  (match-define (struct Place (p-x p-y pts)) new-p)
+  (for ([pt (in-vector s)])
+       (define x (point-x pt))
+       (define y (point-y pt))
+       (define idx (place-coords->index new-p x y))
+       (when idx
+         (vector-sub1! pts idx)))
+  new-p)
+
+;;
+;; Utilities
+;;
+;; (Duplicating some functionality from
+;; schematics/numeric:1/vector with types definitions)
+
+(: vector-add1! ((Vectorof Real) Natural -> Void))
+(define (vector-add1! v idx)
+  (vector-set! v idx (add1 (vector-ref v idx))))
+
+(: vector-sub1! ((Vectorof Real) Natural -> Void))
+(define (vector-sub1! v idx)
+  (vector-set! v idx (sub1 (vector-ref v idx))))
 
 (provide
  place-ref
  place-has-point?
- place-ll)
+ place-ll
+
+ place-add
+ place-remove)

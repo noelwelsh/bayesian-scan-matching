@@ -8,6 +8,13 @@
  "point.ss"
  "util.ss")
 
+(: grid-scan-transform/pose (Grid-Scan Pose -> Grid-Scan))
+(define (grid-scan-transform/pose scan pose)
+  (grid-scan-transform scan
+                       (vector-ref pose 0)
+                       (vector-ref pose 1)
+                       (vector-ref pose 2)))
+
 (: grid-scan-transform (Grid-Scan Real Real Real -> Grid-Scan))
 (define (grid-scan-transform scan xt yt a)
   (vector-map (lambda: ([pt : Grid-Point]) 
@@ -28,4 +35,5 @@
             (floor (+ (+ (* sina x) (* cosa y)) yt))))))
 
 (provide
- grid-scan-transform)
+ grid-scan-transform
+ grid-scan-transform/pose)

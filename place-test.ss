@@ -4,6 +4,8 @@
  (planet schematics/schemeunit:3/test)
  "place.ss"
  "types.ss"
+ "scan-match.ss"
+ "grid-scan.ss"
  "test-data.ss")
 
 (define/provide-test-suite place-tests
@@ -16,5 +18,21 @@
    (check = (place-ref example-place 4 4) 1)
    (check-exn exn:fail? (lambda () (place-ref example-place 0 5)))
    (check-exn exn:fail? (lambda () (place-ref example-place 11 0))))
-    
+
+  (test-case
+   "place-add and place-remove are inverses"
+   (define sample (scan-match/best example-place example-grid-scan))
+   (define pose (sample-pose sample))
+   (define scan (grid-scan-transform/pose example-grid-scan pose))
+   (check-equal?
+    (for/fold ([place example-place])
+        ([i (in-range 10)])
+      (if (odd? i)
+          (place-remove place scan)
+          (place-add place scan)))
+    example-place))
+
+  (test-case
+   "place-add updates the correct locations"
+   (fail "Not implemented"))
   )

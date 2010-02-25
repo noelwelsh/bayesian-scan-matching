@@ -15,6 +15,10 @@
 ;; in to obtain the LL.
 (define-type-alias Sample (Pair Real Pose))
 
+(: sample-pose (Sample -> Pose))
+(define (sample-pose s)
+  (cdr s))
+
 ;; A Place represents a physical location in the world. We try to match scans against places
 ;;
 ;; x is the maximum extent of the Place in the x direction
@@ -22,7 +26,9 @@
 ;; points are the grid points in the Place
 ;;
 ;; Points are ordered row-major
-(define-struct: Place ([x : Natural] [y : Natural] [points : (Vectorof Real)]))
+(define-struct: Place
+  ([x : Natural] [y : Natural] [points : (Vectorof Real)])
+  #:transparent)
 
 (provide
  (all-defined-out))
