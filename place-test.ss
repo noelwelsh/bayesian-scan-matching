@@ -43,7 +43,9 @@
             (check-equal?
              (place-ref posterior x y)
              (add1 (place-ref example-place x y)))
-            (check-equal?
-             (place-ref posterior x y)
-             (place-ref example-place x y)))))
+            (fail "Place does not expand to contain added points."))))
+
+  (test-case
+   "place expands to contain scan on update"
+   (fail "Not implemented"))
   )
