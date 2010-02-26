@@ -22,6 +22,14 @@
           (vector 2 2)
           (vector 2 3) (vector 3 3) (vector 4 3)))
 
+;; Scan that is half outside example-place
+;;
+;; exact-match-grid-scan translated -6,-2
+(define translated-grid-scan
+  (vector (vector -4 -2) (vector -3 -2) (vector -2 -2)
+          (vector -4 -1)
+          (vector -4 0)
+          (vector -4 1) (vector -3 1) (vector -2 1)))
 
 ;; Place and scan small enough that we can work all the
 ;; possible scan matches

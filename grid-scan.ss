@@ -1,6 +1,7 @@
 #lang typed/scheme
 
 (require
+ scheme/fixnum
  scheme/vector
  "base.ss"
  "types.ss"
@@ -34,6 +35,30 @@
    (assert (number->exact-integer
             (floor (+ (+ (* sina x) (* cosa y)) yt))))))
 
+(: grid-scan-bb (Grid-Scan -> (values Point Point)))
+;; Calculate the bounding box for a grid scan, returning the
+;; top left and bottom right point
+(define (grid-scan-bb scan)
+  (define start-pt (vector-ref scan 0))
+  (define start-x (point-x start-pt))
+  (define start-y (point-y start-pt))
+  (let loop ([lt-x start-x] [lt-y start-y]
+             [rb-x start-x] [rb-y start-y]
+             [idx 0])
+    (if (fx= idx (vector-length scan))
+        (values (vector lt-x lt-y) (vector rb-x rb-y))
+        (let* ([pt (vector-ref scan idx)]
+               [x  (point-x pt)]
+               [y  (point-y pt)])
+          (loop
+           (if (fx< x lt-x) x lt-x)
+           (if (fx< y lt-y) y lt-y)
+           (if (fx< rb-x x) x rb-x)
+           (if (fx< rb-y y) y rb-y)
+           (add1 idx))))))
+
+
 (provide
  grid-scan-transform
- grid-scan-transform/pose)
+ grid-scan-transform/pose
+ grid-scan-bb)

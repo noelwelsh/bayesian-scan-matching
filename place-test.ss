@@ -47,5 +47,10 @@
 
   (test-case
    "place expands to contain scan on update"
-   (fail "Not implemented"))
+   (define posterior (place-add example-place translated-grid-scan))
+   (check-equal? (Place-x posterior) 16)
+   (check-equal? (Place-y posterior) 7)
+   (check = (place-ref posterior 0 0) 2)
+   (check = (place-ref posterior 1 0) 2)
+   (check = (place-ref posterior 0 1) 1))
   )
