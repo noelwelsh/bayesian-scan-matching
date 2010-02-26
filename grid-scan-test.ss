@@ -23,7 +23,7 @@
    (define-values (lt1 rb1) (grid-scan-bb example-grid-scan))
    (define-values (lt2 rb2) (grid-scan-bb translated-grid-scan))
    (check-equal? lt1 (vector 2 0))
-   (check-equal? rb1 (vector 4 3))
+   (check-equal? rb1 (vector 8 1))
    (check-equal? lt2 (vector -4 -2))
    (check-equal? rb2 (vector -2 1))) 
   )

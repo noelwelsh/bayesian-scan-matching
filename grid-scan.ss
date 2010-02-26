@@ -35,7 +35,7 @@
    (assert (number->exact-integer
             (floor (+ (+ (* sina x) (* cosa y)) yt))))))
 
-(: grid-scan-bb (Grid-Scan -> (values Point Point)))
+(: grid-scan-bb (Grid-Scan -> (values Grid-Point Grid-Point)))
 ;; Calculate the bounding box for a grid scan, returning the
 ;; top left and bottom right point
 (define (grid-scan-bb scan)

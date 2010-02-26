@@ -5,6 +5,7 @@
  scheme/vector
  "types.ss"
  "point.ss"
+ "grid-scan.ss"
  "util.ss")
 
 
@@ -47,16 +48,59 @@
   (match-define (struct Place (p-x p-y pts)) p)
   (make-Place p-x p-y (vector-copy pts)))
 
+(: place-expand-to-bb (Place Grid-Point Grid-Point -> (values Place Integer Integer)))
+;;
+;; Return an expanded place and x and y offsets to convert
+;; old coordinate system to new one.
+(define (place-expand-to-bb p lt rb)
+  (match-define (struct Place (p-x p-y pts)) p)
+  (define lt-x (point-x lt))
+  (define lt-y (point-y lt))
+  (define new-lt-x (if (< lt-x 0) lt-x 0))
+  (define new-lt-y (if (< lt-y 0) lt-y 0))
+  (define rb-x (point-x rb))
+  (define rb-y (point-y rb))
+  (define new-rb-x (if (< p-x rb-x) rb-x p-x))
+  (define new-rb-y (if (< p-y rb-y) rb-y p-y))
+
+  (define new-p-x
+    (assert (number->exact-nonnegative-integer (- new-rb-x new-lt-x))))
+  (define new-p-y
+    (assert (number->exact-nonnegative-integer (- new-rb-y new-lt-y))))
+  (define new-size (* new-p-x new-p-y))
+  (define new-pts (make-vector new-size #{1.0 :: Real}))
+
+  (let loop-x ([x 0])
+    (unless (= x p-x)
+      (let loop-y ([y 0])
+        (unless (= y p-y)
+          (let* ([pt (vector-ref pts (+ (* y p-x) x))]
+               [new-x (- x new-lt-x)]
+               [new-y (- y new-lt-y)]
+               [new-idx (+ (* new-y new-p-x) new-x)])y
+          (vector-set! new-pts new-idx pt))
+          (loop-y (add1 y))))
+      (loop-x (add1 x))))
+  ;;(for* ([x (in-range p-x)]
+  ;;       [y (in-range p-y)])
+  ;;      (let* ([pt (vector-ref pts (+ (* y p-x) x))]
+  ;;             [new-x (- x new-lt-x)]
+  ;;             [new-y (- y new-lt-y)]
+  ;;             [new-idx (+ (* new-y new-p-x) new-x)])y
+  ;;        (vector-set! new-pts new-idx pt)))
+  (values (make-Place new-p-x new-p-y new-pts) new-lt-x new-lt-y))
+  
 (: place-add (Place Grid-Scan -> Place))
 ;;
 ;; Update a place with a scan. The scan must be already
 ;; transformed by an appropriate pose
 (define (place-add p s)
-  (define new-p (place-copy p))
+  (define-values (lt rb) (grid-scan-bb s))
+  (define-values (new-p xt yt) (place-expand-to-bb p lt rb))
   (match-define (struct Place (p-x p-y pts)) new-p)
   (for ([pt (in-vector s)])
-       (define x (point-x pt))
-       (define y (point-y pt))
+       (define x (- (point-x pt) xt))
+       (define y (- (point-y pt) yt))
        (define idx (place-coords->index new-p x y))
        (when idx
          (vector-add1! pts idx)))

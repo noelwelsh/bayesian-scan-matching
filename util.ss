@@ -21,6 +21,12 @@
       number
       #f))
 
+(: number->exact-nonnegative-integer (Number -> (Option Exact-Nonnegative-Integer)))
+(define (number->exact-nonnegative-integer number)
+  (if (exact-nonnegative-integer? number)
+      number
+      #f))
+
 (: assert (All (a) ((Option a) -> a)))
 (define (assert v)
   (if v
@@ -35,6 +41,7 @@
 (provide
  number->exact-integer
  number->real
+ number->exact-nonnegative-integer
  
  assert
 
