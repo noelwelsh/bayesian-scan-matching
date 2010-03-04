@@ -24,13 +24,12 @@
    "scan-match"
    (define sample (scan-match small-place small-grid-scan 45))
    (display (length sample))(newline)
-   (display sample)
+   ;(display sample)
    (fail "Not implemented"))
 
   (test-case
    "scan-match/best"
    (define sample (scan-match/best example-place exact-match-grid-scan))
-   (display sample)(newline)
    (check-= (car sample) (* 8 (log 2/3)) 0.00001)
    (check-equal? (cdr sample) (vector 0 0 0)))
   )
