@@ -21,8 +21,8 @@
       number
       #f))
 
-(: number->exact-nonnegative-integer (Number -> (Option Exact-Nonnegative-Integer)))
-(define (number->exact-nonnegative-integer number)
+(: number->natural (Number -> (Option Natural)))
+(define (number->natural number)
   (if (exact-nonnegative-integer? number)
       number
       #f))
@@ -41,7 +41,7 @@
 (provide
  number->exact-integer
  number->real
- number->exact-nonnegative-integer
+ number->natural
  
  assert
 

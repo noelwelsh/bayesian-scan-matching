@@ -57,14 +57,43 @@
             (fail "Place does not expand to contain added points."))))
 
   (test-case
-   "place expands to contain scan on update"
+   "place expands left/up to contain scan on update"
    (define posterior (place-add example-place translated-grid-scan))
    (check-equal? (Place-w posterior) 14)
    (check-equal? (Place-h posterior) 7)
    (check-equal? (Place-x posterior) -4)
    (check-equal? (Place-y posterior) -2)
-   (check = (place-ref posterior -4 -2) 2)
-   (check = (place-ref posterior -3 -2) 2)
+   (for ([pt (in-vector translated-grid-scan)])
+        (check = (place-ref posterior
+                            (vector-ref pt 0) (vector-ref pt 1)) 2))
    (check = (place-ref posterior 0 0) 1)
-   (check = (place-ref posterior 3 0) 2))
+   (check = (place-ref posterior 3 0) 2)
+   (check = (place-ref posterior 9 4) 1))
+
+  (test-case
+   "place expands right/down to contain scan on update"
+   (define posterior (place-add small-place exact-match-grid-scan))
+   (check-equal? (Place-w posterior) 5)
+   (check-equal? (Place-h posterior) 4)
+   (check-equal? (Place-x posterior) 0)
+   (check-equal? (Place-y posterior) 0)
+   (for ([pt (in-vector exact-match-grid-scan)])
+        (check = (place-ref posterior
+                            (vector-ref pt 0) (vector-ref pt 1)) 2))
+   (check = (place-ref posterior 0 0) 2)
+   (check = (place-ref posterior 1 0) 1)
+   (check = (place-ref posterior 0 1) 1)
+   (check = (place-ref posterior 1 1) 2))
+  
+  (test-case
+   "grid-scan->place"
+   (define p (grid-scan->place translated-grid-scan))
+   (check-equal? (Place-w p) 3)
+   (check-equal? (Place-h p) 4)
+   (check-equal? (Place-x p) -4)
+   (check-equal? (Place-y p) -2)
+   (for ([pt (in-vector translated-grid-scan)])
+        (check = (place-ref p (vector-ref pt 0) (vector-ref pt 1)) 2))
+   (check = (place-ref p -2 0) 1))
+
   )

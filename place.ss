@@ -19,7 +19,7 @@
            'place-ref
            (format "Indices in the range ~a to ~a"
                    (list p-x p-y)
-                   (list (sub1 (+ p-x p-w)) (sub1 (+ p-x p-h))))
+                   (list (sub1 (+ p-x p-w)) (sub1 (+ p-y p-h))))
            (list x y))))))
 
 
@@ -28,7 +28,7 @@
   (match-define (struct Place (p-x p-y p-w p-h pts)) p)
   (if (and (<= p-x x) (<= p-y y)
            (< x (+ p-x p-w)) (< y (+ p-y p-h)))
-      (number->exact-nonnegative-integer (coords->index x y p-x p-y p-w))
+      (number->natural (coords->index x y p-x p-y p-w))
       #f))
   
 (: place-has-point? (Place Integer Integer -> Boolean))
@@ -58,15 +58,15 @@
   (define lt-y (point-y lt))
   (define new-lt-x (if (< lt-x p-x) lt-x p-x))
   (define new-lt-y (if (< lt-y p-y) lt-y p-y))
-  (define rb-x (point-x rb))
-  (define rb-y (point-y rb))
+  (define rb-x (add1 (point-x rb)))
+  (define rb-y (add1 (point-y rb)))
   (define new-rb-x (if (< (+ p-x p-w) rb-x) rb-x (+ p-x p-w)))
   (define new-rb-y (if (< (+ p-y p-h) rb-y) rb-y (+ p-y p-h)))
 
   (define new-p-w
-    (assert (number->exact-nonnegative-integer (- new-rb-x new-lt-x))))
+    (assert (number->natural (- new-rb-x new-lt-x))))
   (define new-p-h
-    (assert (number->exact-nonnegative-integer (- new-rb-y new-lt-y))))
+    (assert (number->natural (- new-rb-y new-lt-y))))
   (define new-size (* new-p-w new-p-h))
   (define new-pts (make-vector new-size #{1.0 :: Real}))
 
@@ -115,6 +115,22 @@
          (vector-sub1! pts idx)))
   new-p)
 
+(: grid-scan->place (Grid-Scan -> Place))
+(define (grid-scan->place scan)
+  (define-values (lt rb) (grid-scan-bb scan))
+  (define lt-x (point-x lt))
+  (define lt-y (point-y lt))
+  (define rb-x (point-x rb))
+  (define rb-y (point-y rb))
+
+  (define w (assert (number->natural (add1 (- rb-x lt-x)))))
+  (define h (assert (number->natural (add1 (- rb-y lt-y)))))
+
+  (place-add
+   (make-Place lt-x lt-y w h (make-vector (* w h) #{1.0 :: Real}))
+   scan))
+
+
 ;;
 ;; Utilities
 ;;
@@ -140,4 +156,6 @@
  place-ll
 
  place-add
- place-remove)
+ place-remove
+
+ grid-scan->place)
