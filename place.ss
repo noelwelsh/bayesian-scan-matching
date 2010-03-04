@@ -80,13 +80,7 @@
           (vector-set! new-pts new-idx pt))
           (loop-y (add1 y))))
       (loop-x (add1 x))))
-  ;;(for* ([x (in-range p-x)]
-  ;;       [y (in-range p-y)])
-  ;;      (let* ([pt (vector-ref pts (+ (* y p-x) x))]
-  ;;             [new-x (- x new-lt-x)]
-  ;;             [new-y (- y new-lt-y)]
-  ;;             [new-idx (+ (* new-y new-p-x) new-x)])y
-  ;;        (vector-set! new-pts new-idx pt)))
+
   (values (make-Place new-lt-x new-lt-y new-p-w new-p-h new-pts)
           new-lt-x new-lt-y))
   
