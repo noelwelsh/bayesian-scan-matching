@@ -4,7 +4,7 @@
  "types.ss")
 
 (define example-place
-  (make-Place 10 5
+  (make-Place 0 0 10 5
               #(1 1 2 2 2 2 2 2 1 1
                 1 1 2 1 1 1 1 1 2 1
                 1 1 2 1 1 1 1 2 1 1
@@ -34,12 +34,19 @@
 ;; Place and scan small enough that we can work all the
 ;; possible scan matches
 (define small-place
-  (make-Place 2 2 #(2 1 1 2)))
+  (make-Place 0 0 2 2 #(2 1 1 2)))
 
 (define small-grid-scan
   (vector (vector 0 0) (vector 0 1)))
 
-
+;; Place where the first element is not at 0,0
+(define offset-place
+  (make-Place -4 -4 10 5
+              #(1 1 2 2 2 2 2 2 1 1
+                1 1 2 1 1 1 1 1 2 1
+                1 1 2 1 1 1 1 2 1 1
+                1 1 2 2 2 1 1 2 1 1
+                1 1 1 1 1 2 2 1 1 1)))
 
 
 (provide

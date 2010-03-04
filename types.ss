@@ -21,13 +21,16 @@
 
 ;; A Place represents a physical location in the world. We try to match scans against places
 ;;
-;; x is the maximum extent of the Place in the x direction
-;; y is the maximum extent in the y direction
+;; x is the x coordinate of the first point in points
+;; y is the y coordinate of the first point in points
+;; w is the maximum extent of the Place in the x direction (width)
+;; h is the maximum extent in the y direction (height)
 ;; points are the grid points in the Place
 ;;
 ;; Points are ordered row-major
 (define-struct: Place
-  ([x : Natural] [y : Natural] [points : (Vectorof Real)])
+  ([x : Integer] [y : Integer] [w : Natural] [h : Natural]
+   [points : (Vectorof Real)])
   #:transparent)
 
 (provide
