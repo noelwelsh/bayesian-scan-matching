@@ -30,7 +30,7 @@
 ;; Points are ordered row-major
 (define-struct: Place
   ([x : Integer] [y : Integer] [w : Natural] [h : Natural]
-   [points : (Vectorof Real)])
+   [points : FlVector])
   #:transparent)
 
 (provide

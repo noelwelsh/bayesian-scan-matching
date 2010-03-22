@@ -1,6 +1,7 @@
 #lang typed/scheme
 
 (require
+ scheme/unsafe/ops
  "base.ss"
  "types.ss"
  "point.ss"
@@ -17,14 +18,14 @@
 (define (log-likelihood place grid-scan)
   (: loop (Real Boolean Natural -> (values Real Boolean)))
   (define (loop ll inside? idx) 
-      (if (= idx (vector-length grid-scan))
+      (if (= idx (unsafe-vector-length grid-scan))
           (values ll inside?)
-          (let* ([pt (vector-ref grid-scan idx)]
+          (let* ([pt (unsafe-vector-ref grid-scan idx)]
                  [x (point-x pt)]
                  [y (point-y pt)])
             (if (place-has-point? place x y)
-                (loop (+ (place-ll place x y) ll) #t (add1 idx))
-                (loop (+ (place-ll place x y) ll) inside? (add1 idx))))))
+                (loop (unsafe-fl+ (place-ll place x y) ll) #t (add1 idx))
+                (loop (unsafe-fl+ (place-ll place x y) ll) inside? (add1 idx))))))
   (: ll Real) (: inside? Boolean)
   (define-values (ll inside?)
     (loop 0.0 #f 0))
@@ -46,8 +47,8 @@
    ;  (Place Grid-Scan Natural -> (Listof Sample))))
    )
 (define (scan-match place grid-scan angle-increment)
-  (define: (add-unit [v : Real]) : Real (+ v 1))
-  (define: (sub-unit [v : Real]) : Real (- v 1))
+  (define: (add-unit [v : Real]) : Real (unsafe-fl+ v 1))
+  (define: (sub-unit [v : Real]) : Real (unsafe-fl- v 1))
   (: transformed-ll (Real Real Real -> (Option Real)))
   (define (transformed-ll x y a)
     (log-likelihood

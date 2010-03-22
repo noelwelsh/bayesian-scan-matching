@@ -13,7 +13,7 @@
 (define (place-ref p x y)
   (let ([idx (place-coords->index p x y)])
     (if idx
-        (vector-ref (Place-points p) idx)
+        (unsafe-flvector-ref (Place-points p) idx)
         (match-let ([(struct Place (p-x p-y p-w p-h pts)) p])
           (raise-type-error
            'place-ref
@@ -39,9 +39,10 @@
 (define (place-ll p x y)
   (let ([idx (place-coords->index p x y)])
     (if idx
-        (let ([n (vector-ref (Place-points p) idx)])
-          (assert (number->real (log (/ n (+ n 1.0))))))
-        (assert (number->real (log 0.5))))))
+        (let ([n (unsafe-flvector-ref (Place-points p) idx)])
+          (assert (number->real
+                   (unsafe-fllog (unsafe-fl/ n (unsafe-fl+ n 1.0))))))
+        (assert (number->real (unsafe-fllog 0.5))))))
 
 (: place-copy (Place -> Place))
 (define (place-copy p)
