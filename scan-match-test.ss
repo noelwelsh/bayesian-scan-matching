@@ -31,5 +31,5 @@
    "scan-match/best"
    (define sample (scan-match/best example-place exact-match-grid-scan))
    (check-= (car sample) (* 8 (log 2/3)) 0.00001)
-   (check-equal? (cdr sample) (vector 0 0 0)))
+   (check-equal? (cdr sample) (vector 0. 0. 0.)))
   )

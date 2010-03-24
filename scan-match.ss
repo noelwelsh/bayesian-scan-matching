@@ -10,13 +10,13 @@
  "pose.ss"
  "util.ss")
 
-(: log-likelihood (Place Grid-Scan -> (Option Real)))
+(: log-likelihood (Place Grid-Scan -> (Option Float)))
 ;; Computes the log-likelihood for the scan coming from the
 ;; place. We assume coordinates have already been adjusted
 ;; etc. Returns #f if the scan is completely outside the
 ;; place. Otherwise a log-likelihood is always returned.
 (define (log-likelihood place grid-scan)
-  (: loop (Real Boolean Natural -> (values Real Boolean)))
+  (: loop (Float Boolean Natural -> (values Float Boolean)))
   (define (loop ll inside? idx) 
       (if (= idx (unsafe-vector-length grid-scan))
           (values ll inside?)
@@ -26,7 +26,7 @@
             (if (place-has-point? place x y)
                 (loop (unsafe-fl+ (place-ll place x y) ll) #t (add1 idx))
                 (loop (unsafe-fl+ (place-ll place x y) ll) inside? (add1 idx))))))
-  (: ll Real) (: inside? Boolean)
+  (: ll Float) (: inside? Boolean)
   (define-values (ll inside?)
     (loop 0.0 #f 0))
 
@@ -47,15 +47,15 @@
    ;  (Place Grid-Scan Natural -> (Listof Sample))))
    )
 (define (scan-match place grid-scan angle-increment)
-  (define: (add-unit [v : Real]) : Real (unsafe-fl+ v 1))
-  (define: (sub-unit [v : Real]) : Real (unsafe-fl- v 1))
-  (: transformed-ll (Real Real Real -> (Option Real)))
+  (define: (add-unit [v : Float]) : Float (unsafe-fl+ v 1.0))
+  (define: (sub-unit [v : Float]) : Float (unsafe-fl- v 1.0))
+  (: transformed-ll (Float Float Float -> (Option Float)))
   (define (transformed-ll x y a)
     (log-likelihood
      place
      (grid-scan-transform grid-scan x y a)))
   (: sample-y-axis
-     ((Listof Sample) Real Real (Real -> Real) Real -> (Listof Sample)))
+     ((Listof Sample) Float Float (Float -> Float) Float -> (Listof Sample)))
   ;; Given a fixed x and angle sample the y-axis in the
   ;; direction given by y-inc
   (define (sample-y-axis samples x y y-inc angle)
@@ -67,19 +67,19 @@
            (y-inc y) y-inc
            angle)
           samples)))
-  (: sample-x-axis ((Listof Sample) Real (Real -> Real) Real -> (Listof Sample)))
+  (: sample-x-axis ((Listof Sample) Float (Float -> Float) Float -> (Listof Sample)))
   ;; Sample the half-plane in the direction given by x-inc
   (define (sample-x-axis samples x x-inc angle)
-    (let ([ll (transformed-ll x 0 angle)])
+    (let ([ll (transformed-ll x 0.0 angle)])
       (if ll
           (sample-x-axis
            (sample-y-axis
-            (sample-y-axis (cons (cons ll (vector x 0 angle)) samples)
+            (sample-y-axis (cons (cons ll (vector x 0.0 angle)) samples)
                            x
-                           (add-unit 0) add-unit
+                           (add-unit 0.0) add-unit
                            angle)
             x
-            (sub-unit 0) sub-unit
+            (sub-unit 0.0) sub-unit
             angle)
            (x-inc x) x-inc angle)
           samples)))
@@ -87,8 +87,8 @@
   (for/fold ([samples null])
       ([angle (in-range 0 360 angle-increment)])
     (sample-x-axis
-     (sample-x-axis samples 0 add-unit (degrees->radians angle))
-     (sub-unit 0) sub-unit (degrees->radians angle))))
+     (sample-x-axis samples 0.0 add-unit (degrees->radians (unsafe-fx->fl angle)))
+     (sub-unit 0.0) sub-unit (degrees->radians (unsafe-fx->fl angle)))))
 
 (: scan-match/best (Place Grid-Scan -> Sample))
 ;; Returns the best sample

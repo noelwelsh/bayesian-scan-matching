@@ -3,6 +3,8 @@
 (require
  scheme/match
  scheme/vector
+ scheme/flonum
+ scheme/unsafe/ops
  "types.ss"
  "point.ss"
  "grid-scan.ss"
@@ -35,19 +37,18 @@
 (define (place-has-point? p x y)
   (if (place-coords->index p x y) #t #f))
   
-(: place-ll (Place Integer Integer -> Real))
+(: place-ll (Place Integer Integer -> Float))
 (define (place-ll p x y)
   (let ([idx (place-coords->index p x y)])
     (if idx
         (let ([n (unsafe-flvector-ref (Place-points p) idx)])
-          (assert (number->real
-                   (unsafe-fllog (unsafe-fl/ n (unsafe-fl+ n 1.0))))))
-        (assert (number->real (unsafe-fllog 0.5))))))
+          (unsafe-fllog (unsafe-fl/ n (unsafe-fl+ n 1.0))))
+        (unsafe-fllog 0.5))))
 
 (: place-copy (Place -> Place))
 (define (place-copy p)
   (match-define (struct Place (p-x p-y p-w p-h pts)) p)
-  (make-Place p-x p-y p-w p-h (vector-copy pts)))
+  (make-Place p-x p-y p-w p-h (flvector-copy pts)))
 
 (: place-expand-to-bb (Place Grid-Point Grid-Point -> (values Place Integer Integer)))
 ;;
@@ -69,16 +70,19 @@
   (define new-p-h
     (assert (number->natural (- new-rb-y new-lt-y))))
   (define new-size (* new-p-w new-p-h))
-  (define new-pts (make-vector new-size #{1.0 :: Real}))
+  (define new-pts (make-flvector new-size 1.0))
 
   ;; Copy pts to new-pts
   (let loop-x ([x p-x])
     (unless (= x (+ p-x p-w))
       (let loop-y ([y p-y])
         (unless (= y (+ p-y p-h))
-          (let* ([pt (vector-ref pts (coords->index x y p-x p-y p-w))]
-                 [new-idx (coords->index x y new-lt-x new-lt-y new-p-w)])
-          (vector-set! new-pts new-idx pt))
+          (let* ([pt (unsafe-flvector-ref
+                      pts
+                      (assert (number->natural (coords->index x y p-x p-y p-w))))]
+                 [new-idx (assert
+                           (number->natural (coords->index x y new-lt-x new-lt-y new-p-w)))])
+          (unsafe-flvector-set! new-pts new-idx pt))
           (loop-y (add1 y))))
       (loop-x (add1 x))))
 
@@ -98,7 +102,7 @@
        (define y (point-y pt))
        (define idx (place-coords->index new-p x y))
        (when idx
-         (vector-add1! pts idx)))
+         (flvector-add1! pts idx)))
   new-p)
 
 (: place-remove (Place Grid-Scan -> Place))
@@ -113,7 +117,7 @@
        (define y (point-y pt))
        (define idx (place-coords->index new-p x y))
        (when idx
-         (vector-sub1! pts idx)))
+         (flvector-sub1! pts idx)))
   new-p)
 
 (: grid-scan->place (Grid-Scan -> Place))
@@ -128,7 +132,7 @@
   (define h (assert (number->natural (add1 (- rb-y lt-y)))))
 
   (place-add
-   (make-Place lt-x lt-y w h (make-vector (* w h) #{1.0 :: Real}))
+   (make-Place lt-x lt-y w h (make-flvector (* w h) 1.0))
    scan))
 
 
@@ -140,16 +144,21 @@
 (define (coords->index x y p-x p-y p-w)
   (+ (* (- y p-y) p-w) (- x p-x)))
 
-;; (Duplicating some functionality from
-;; schematics/numeric:1/vector with types definitions)
+(: flvector-add1! (FlVector Natural -> Void))
+(define (flvector-add1! v idx)
+  (flvector-set! v idx (unsafe-fl+ (flvector-ref v idx) 1.0)))
 
-(: vector-add1! ((Vectorof Real) Natural -> Void))
-(define (vector-add1! v idx)
-  (vector-set! v idx (add1 (vector-ref v idx))))
+(: flvector-sub1! (FlVector Natural -> Void))
+(define (flvector-sub1! v idx)
+  (flvector-set! v idx (unsafe-fl- (flvector-ref v idx) 1.0)))
 
-(: vector-sub1! ((Vectorof Real) Natural -> Void))
-(define (vector-sub1! v idx)
-  (vector-set! v idx (sub1 (vector-ref v idx))))
+(: flvector-copy (FlVector -> FlVector))
+(define (flvector-copy v)
+  (define len (unsafe-flvector-length v))
+  (define new (make-flvector len 0.0))
+  (for ([i (in-range len)])
+       (unsafe-flvector-set! new i (unsafe-flvector-ref v i)))
+  new)
 
 (provide
  place-ref

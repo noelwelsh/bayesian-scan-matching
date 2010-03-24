@@ -1,7 +1,8 @@
 #lang typed/scheme
 
 (require
- scheme/math)
+ scheme/math
+ scheme/unsafe/ops)
 
 
 (: number->exact-integer (Number -> (Option Integer)))
@@ -33,9 +34,9 @@
       v
       (raise-type-error 'assert "Assertion failed" v)))
 
-(: degrees->radians (Real -> Real))
+(: degrees->radians (Float -> Float))
 (define (degrees->radians deg)
-  (/ (* deg (* 2 pi)) 360))
+  (unsafe-fl/ (unsafe-fl* deg (unsafe-fl* 2.0 pi)) 360.0))
 
 
 (provide
